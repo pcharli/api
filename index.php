@@ -38,6 +38,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') :
         $sql = sprintf("SELECT * FROM $route WHERE $id_field = %d", $_GET['id']);
         $arrayDatas['message'] = "Détails de $route";
     else :
+        //une liste d'élements ?
         $sql = "SELECT * FROM $route";
         $arrayDatas['message'] = "Liste des $route";
     endif;
@@ -53,13 +54,16 @@ if($_SERVER['REQUEST_METHOD'] == 'DELETE') :
         echo json_encode($arrayDatas);
         die();
     else :
+        //si on n'a pas l'id
         $arrayDatas['error'] = "Il manque un id";
+        //conversion et génération du json
         echo json_encode($arrayDatas);
         die();
     endif;
 endif;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') :
+    //quelle route
     if($route == "personnes") :
             $sql = sprintf("INSERT INTO $route SET nom = '%s', prenom = '%s'",
                 $_POST['nom'],
@@ -73,15 +77,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') :
         echo $connect->error;
         $arrayDatas['message'] = "Ajout dans $route";
         $arrayDatas['id insert'] = $connect->insert_id;
+        //conversion et énération du json
         echo json_encode($arrayDatas);
         die();
 endif;
 
 if($_SERVER['REQUEST_METHOD'] == 'PUT') :
+    //a-ton un id ?
     if( isset($_GET['id'])) :
+        //pas de $_PUT ou de $_PATCH, donc on récupère les datas de la requête http via :
         parse_str(file_get_contents("php://input"), $put);
         //print_r($put);
         //exit;
+        //quelle route ?
         if($route == "personnes") :
             $sql = sprintf("UPDATE $route SET nom = '%s', prenom = '%s' WHERE id_personnes = %d",
                 $put['nom'],
@@ -98,6 +106,7 @@ if($_SERVER['REQUEST_METHOD'] == 'PUT') :
         $connect->query($sql);
         echo $connect->error;
         $arrayDatas['message'] = "Edit id ".$_GET['id']." dans $route";
+        //conversion et génération du json
         echo json_encode($arrayDatas);
         die();
     endif;
@@ -113,6 +122,7 @@ while($record = $req->fetch_object()) {
 $arrayDatas['records'] = $results;
 echo json_encode($arrayDatas);
 exit;
+
 echo'<pre>';
 print_r($arrayDatas);
 
